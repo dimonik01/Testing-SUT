@@ -1,11 +1,13 @@
 package com.petclinic;
 
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static io.restassured.RestAssured.given;
@@ -66,5 +68,24 @@ public class PetClinicApiTest extends BaseApiTest {
         for (String item : lastNameList){
             assertThat("lastName is blank or null", item, not(blankOrNullString()));
         }
+    }
+
+    @Test
+    void shouldReturnNotFoundForUnknownOwner(){
+        Response response = given()
+                        .pathParam("id", 999999)
+                .when()
+                        .get("/api/customer/owners/{id}")
+                .then()
+                        .statusCode(404)
+                        .contentType(ContentType.JSON)
+                        .extract()
+                        .response();
+        response.prettyPrint();
+        JsonPath jsonPath = response.jsonPath();
+        Integer statusCodeFromJson = jsonPath.getInt("status");
+
+        assertThat("Unexpected status field in JSON response", statusCodeFromJson, is(404));
+
     }
 }
