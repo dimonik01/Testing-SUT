@@ -3,7 +3,10 @@ package com.petclinic;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,13 +31,17 @@ public class PetClinicApiTest extends BaseApiTest {
 
     @Test
     void shouldGetOwnerById(){
+        Response response =
         given()
                 .pathParam("ownerId", 1)
         .when()
-                .get("/api/customer/owners/{ownerId}")
+                .get("/api/customer/owners/{ownerId}");
+        response
         .then()
                 .statusCode(200)
-                .contentType(ContentType.JSON);
+                .contentType(ContentType.JSON)
+                .body("id", equalTo(1));
+
     }
 
     @Test
@@ -71,6 +78,7 @@ public class PetClinicApiTest extends BaseApiTest {
     }
 
     @Test
+    @Disabled //Недостаточно информации по Swagger
     void shouldReturnNotFoundForUnknownOwner(){
         Response response = given()
                         .pathParam("id", 999999)
@@ -86,6 +94,14 @@ public class PetClinicApiTest extends BaseApiTest {
         Integer statusCodeFromJson = jsonPath.getInt("status");
 
         assertThat("Unexpected status field in JSON response", statusCodeFromJson, is(404));
-
     }
+
+    @Test
+    void getOwnersResponse(){
+        Response response = given()
+                .when()
+                .get("/api/customer/owners");
+        System.out.println(response.prettyPrint());
+    }
+
 }
