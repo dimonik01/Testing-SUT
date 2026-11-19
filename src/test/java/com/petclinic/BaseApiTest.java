@@ -8,7 +8,7 @@ import static io.restassured.RestAssured.given;
 
 public abstract class BaseApiTest {
 
-    public static final String BASE_URI = "https://ostk-prioprivat-front.infosysco.ru";
+    public static final String BASE_URI = "http://ostk-prioprivat-front.infosysco.ru";
     protected static String sessionId;
 
     @BeforeAll

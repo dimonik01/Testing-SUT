@@ -6,4 +6,8 @@ public class AuthRequestDto {
     public AuthRequestDto(){
         this.smsOtpCode = "123456";
     }
+
+    public String getSmsOtpCode() {
+        return smsOtpCode;
+    }
 }
