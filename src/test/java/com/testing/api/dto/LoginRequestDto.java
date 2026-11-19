@@ -2,14 +2,15 @@ package com.testing.api.dto;
 
 public class LoginRequestDto {
     private final String login;
-    private final String password = "123456";
+    private final String password;
     private final String providerType;
     private final String applicationType;
 
-    public LoginRequestDto(String login, String providerType, String applicationType){
+    public LoginRequestDto(String login, String password, String providerType, String applicationType){
         this.login = login;
         this.providerType = providerType;
         this.applicationType = applicationType;
+        this.password = password;
     }
 
     public String getLogin() {

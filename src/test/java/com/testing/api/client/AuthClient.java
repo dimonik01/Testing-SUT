@@ -1,7 +1,7 @@
 package com.testing.api.client;
 
 import com.testing.api.dto.AuthRequestDto;
-import com.testing.api.AuthenticatedApiTest;
+import com.testing.api.AuthorizedApiTest;
 import com.testing.api.dto.LoginRequestDto;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -17,7 +17,7 @@ public class AuthClient {
                     .contentType(ContentType.JSON)
                     .body(requestBody)
                 .when()
-                    .post(AuthenticatedApiTest.BASE_URI + loginEndpoint);
+                    .post(AuthorizedApiTest.BASE_URI + loginEndpoint);
     }
 
     public Response getAuthResponse(String sessionId, AuthRequestDto requestBody){
@@ -25,7 +25,7 @@ public class AuthClient {
                     .contentType(ContentType.JSON)
                     .body(requestBody)
                 .when()
-                    .post(AuthenticatedApiTest.BASE_URI + authEndpoint);
+                    .post(AuthorizedApiTest.BASE_URI + authEndpoint);
 
     }
 }
