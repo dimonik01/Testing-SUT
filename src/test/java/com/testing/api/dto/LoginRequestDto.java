@@ -1,4 +1,4 @@
-package com.petclinic;
+package com.testing.api.dto;
 
 public class LoginRequestDto {
     private final String login;

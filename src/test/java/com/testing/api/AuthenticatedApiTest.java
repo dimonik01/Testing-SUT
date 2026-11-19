@@ -1,12 +1,15 @@
-package com.petclinic;
+package com.testing.api;
 
+import com.testing.api.client.AuthClient;
+import com.testing.api.dto.AuthRequestDto;
+import com.testing.api.dto.LoginRequestDto;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 
 import static io.restassured.RestAssured.given;
 
-public abstract class BaseApiTest {
+public abstract class AuthenticatedApiTest {
 
     public static final String BASE_URI = "http://ostk-prioprivat-front.infosysco.ru";
     protected static String sessionId;

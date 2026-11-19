@@ -1,4 +1,4 @@
-package com.petclinic;
+package com.testing.api;
 
 public class Credentials {
     private String login;

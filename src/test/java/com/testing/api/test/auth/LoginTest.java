@@ -1,5 +1,7 @@
-import com.petclinic.BaseApiTest;
-import com.petclinic.LoginRequestDto;
+package com.testing.api.test.auth;
+
+import com.testing.api.AuthenticatedApiTest;
+import com.testing.api.dto.LoginRequestDto;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
@@ -7,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
-public class LoginTest extends BaseApiTest {
+public class LoginTest extends AuthenticatedApiTest {
     private String requestUri = "/auth/login";
 
     @Test
