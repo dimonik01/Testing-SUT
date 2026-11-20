@@ -57,4 +57,26 @@ public class LoginTest extends UnauthorizedApiTest {
                         .body("code", hasItem("login.auth_error"))
                         .extract().response();
     }
+
+    @Test
+    void shouldReturn400IfWrongLogin(){
+        LoginRequestDto loginRequestDto = new LoginRequestDto(
+                "randomNonexistentLogin",
+                "123456",
+                "sms_otp",
+                "api"
+        );
+
+        Response response =
+                given()
+                        .contentType(ContentType.JSON)
+                        .body(loginRequestDto)
+                .when()
+                        .post(BASE_URI + requestUri)
+                .then()
+                        .contentType(ContentType.JSON)
+                        .body("code", hasItem("login.auth_error"))
+                        .body("code", hasItem("login.attemp_info"))
+                        .extract().response();
+    }
 }
