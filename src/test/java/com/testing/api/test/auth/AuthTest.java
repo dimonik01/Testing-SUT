@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static java.util.function.Predicate.isEqual;
+import static org.assertj.core.api.Assertions.shouldHaveThrown;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.hamcrest.Matchers.*;
 
@@ -50,20 +51,23 @@ public class AuthTest extends UnauthorizedApiTest {
 
     @Test
     void shouldReturn200IfSignSuccessful(){
-        AuthRequestDto authRequestDto = new AuthRequestDto("123456");
+        AuthRequestDto authRequestDto = new AuthRequestDto("1234");
         Response response = given()
                 .contentType(ContentType.JSON)
                 .cookie("JSESSIONID", sessionId)
                 .body(authRequestDto)
+                .log().body()
             .when()
                 .post(BASE_URI + requestUri)
             .then()
+                .statusCode(200)
                 /*.body("state", equalTo("logged"))
                 .body("customerType", everyItem(anyOf(equalTo("physical"), equalTo("corporate"), equalTo("solotrader"))))
                 .body("relationType", anyOf(equalTo("1"), equalTo("2"), equalTo("0")))
                 .body("docSignProvider", equalTo("sms_otp"))
                 .body("loginType", equalTo("login"))*/
                 .extract().response();
+        System.out.println(BASE_URI + requestUri);
         response.prettyPrint();
 
     }

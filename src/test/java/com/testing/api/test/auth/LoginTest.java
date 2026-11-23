@@ -74,6 +74,7 @@ public class LoginTest extends UnauthorizedApiTest {
                 .when()
                         .post(BASE_URI + requestUri)
                 .then()
+                        .statusCode(400)
                         .contentType(ContentType.JSON)
                         .body("code", hasItem("login.auth_error"))
                         .body("code", hasItem("login.attemp_info"))
