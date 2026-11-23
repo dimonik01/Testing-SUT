@@ -19,7 +19,7 @@ public class AuthorizedApiTest {
         RestAssured.baseURI = BASE_URI;
         AuthClient authClient = new AuthClient();
         LoginRequestDto loginRequestDto = new LoginRequestDto("nastya59", "123456", "sms_otp", "api");
-        AuthRequestDto authRequestDto = new AuthRequestDto();
+        AuthRequestDto authRequestDto = new AuthRequestDto("123456");
         Response loginResponse = authClient.getLoginResponse(loginRequestDto);
         sessionId = loginResponse.getCookie("JSESSIONID");
         Response authResponse = authClient.getAuthResponse(sessionId, authRequestDto);
