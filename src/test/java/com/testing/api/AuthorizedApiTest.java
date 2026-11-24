@@ -11,7 +11,7 @@ import static io.restassured.RestAssured.given;
 
 public class AuthorizedApiTest {
 
-    public static final String BASE_URI = "http://ostk-prioprivat-front.infosysco.ru";
+    public static final String BASE_URI = "";
     protected static String sessionId;
 
     @BeforeAll

@@ -1,6 +1,7 @@
 package com.testing.api.test.auth;
 
 import com.testing.api.UnauthorizedApiTest;
+import com.testing.api.config.Config;
 import com.testing.api.dto.LoginRequestDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -18,17 +19,17 @@ public class LoginTest extends UnauthorizedApiTest {
     @Test
     void shouldReturn200WhenCredentialsAreValid(){
         LoginRequestDto loginRequestDto = new LoginRequestDto(
-                "nastya59",
-                "123456",
-                "sms_otp",
-                "api"
+                Config.getProperties("positive.login"),
+                Config.getProperties("positive.password"),
+                Config.getProperties("auth.provider"),
+                Config.getProperties("auth.application")
         );
 
         Response response = given()
                 .contentType(ContentType.JSON)
                 .body(loginRequestDto)
             .when()
-                .post(BASE_URI + requestUri)
+                .post(Config.getProperties("stand.url") + requestUri)
             .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
@@ -39,10 +40,10 @@ public class LoginTest extends UnauthorizedApiTest {
     @Test
     void shouldReturn400IfWrongPassword(){
         LoginRequestDto loginRequestDto = new LoginRequestDto(
-                "nastya59",
-                "4321",
-                "sms_otp",
-                "api"
+                Config.getProperties("positive.login"),
+                Config.getProperties("negative.password"),
+                Config.getProperties("auth.provider"),
+                Config.getProperties("auth.application")
         );
 
         Response response =
@@ -50,7 +51,7 @@ public class LoginTest extends UnauthorizedApiTest {
                         .contentType(ContentType.JSON)
                         .body(loginRequestDto)
                     .when()
-                        .post(BASE_URI + requestUri)
+                        .post(Config.getProperties("stand.url") + requestUri)
                     .then()
                         .statusCode(400)
                         .contentType(ContentType.JSON)
@@ -62,9 +63,9 @@ public class LoginTest extends UnauthorizedApiTest {
     void shouldReturn400IfWrongLogin(){
         LoginRequestDto loginRequestDto = new LoginRequestDto(
                 "randomNonexistentLogin",
-                "123456",
-                "sms_otp",
-                "api"
+                Config.getProperties("positive.password"),
+                Config.getProperties("auth.provider"),
+                Config.getProperties("auth.application")
         );
 
         Response response =
@@ -72,7 +73,7 @@ public class LoginTest extends UnauthorizedApiTest {
                         .contentType(ContentType.JSON)
                         .body(loginRequestDto)
                 .when()
-                        .post(BASE_URI + requestUri)
+                        .post(Config.getProperties("stand.url") + requestUri)
                 .then()
                         .statusCode(400)
                         .contentType(ContentType.JSON)
