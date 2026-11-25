@@ -1,61 +1,33 @@
 package com.testing.api.test.auth;
 
 import com.testing.api.UnauthorizedApiTest;
+import com.testing.api.client.AuthClient;
 import com.testing.api.config.Config;
 import com.testing.api.dto.AuthRequestDto;
-import com.testing.api.dto.LoginRequestDto;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
-import static java.util.function.Predicate.isEqual;
-import static org.assertj.core.api.Assertions.shouldHaveThrown;
-import static org.assertj.core.api.BDDAssertions.then;
 import static org.hamcrest.Matchers.*;
 
 public class AuthTest extends UnauthorizedApiTest {
     private String requestUri = "/json/auth/auth";
-    private String sessionId = createSession(Config.getProperties("positive.login"));
-    private String sessionIdForFailedAttempts = createSession(Config.getProperties("negative.login"));
+    private String sessionId;
 
-    public String createSession(String login){
-        LoginRequestDto loginRequestDto = new LoginRequestDto(
-                Config.getProperties("positive.login"),
-                Config.getProperties("positive.password"),
-                Config.getProperties("auth.provider"),
-                Config.getProperties("auth.application")
-        );
-
-        String sessionId = given()
-                .contentType(ContentType.JSON)
-                .body(loginRequestDto)
-            .when()
-                .post(Config.getProperties("stand.url") + "/json/auth/login")
-            .then()
-                .extract().cookie("JSESSIONID");
-
-        return sessionId;
-    }
+    AuthClient authClient = new AuthClient();
 
     @AfterEach
     void endSession(){
-        given()
-                .contentType(ContentType.JSON)
-                .cookie("JSESSIONID", sessionId)
-            .when()
-                .post(Config.getProperties("stand.url") + "/json/auth/logout");
+        authClient.endSession(sessionId);
     }
 
     @Test
     void shouldReturn200IfSignSuccessful(){
-        createSession(Config.getProperties("positive.login"));
+        sessionId = authClient.createSession(Config.getProperties("positive.login"));
         AuthRequestDto authRequestDto = new AuthRequestDto("1234");
-        Response response = given()
+
+        given()
                 .contentType(ContentType.JSON)
                 .cookie("JSESSIONID", sessionId)
                 .body(authRequestDto)
@@ -69,16 +41,14 @@ public class AuthTest extends UnauthorizedApiTest {
                 .body("relationType", anyOf(equalTo("1"), equalTo("2"), equalTo("0")))
                 .body("docSignProvider", equalTo("sms_otp"))
                 .body("loginType", equalTo("login"))
-                .extract().response();
-        System.out.println(Config.getProperties("stand.url") + requestUri);
-        response.prettyPrint();
-
+                .extract();
     }
 
     @Test
     void shouldReturn400IfWrongCode(){
-        createSession(Config.getProperties("positive.login"));
+        sessionId = authClient.createSession(Config.getProperties("positive.login"));
         AuthRequestDto authRequestDto = new AuthRequestDto("4321");
+
         given()
                 .contentType(ContentType.JSON)
                 .cookie("JSESSIONID", sessionId)
@@ -97,12 +67,13 @@ public class AuthTest extends UnauthorizedApiTest {
 
     @Test
     void shouldRestrictUserAccessForRepeatedWrongSignAttempts(){
+        sessionId = authClient.createSession(Config.getProperties("negative.login"));
         AuthRequestDto authRequestDto = new AuthRequestDto("654321");
 
         for (int i = 0; i < 2; i++) {
             given()
                     .contentType(ContentType.JSON)
-                    .cookie("JSESSIONID", sessionIdForFailedAttempts)
+                    .cookie("JSESSIONID", sessionId)
                     .body(authRequestDto)
                     .log().body()
                 .when()
@@ -116,7 +87,7 @@ public class AuthTest extends UnauthorizedApiTest {
 
         given()
                 .contentType(ContentType.JSON)
-                .cookie("JSESSIONID", sessionIdForFailedAttempts)
+                .cookie("JSESSIONID", sessionId)
                 .body(authRequestDto)
                 .log().body()
             .when()
