@@ -6,8 +6,10 @@ import com.testing.api.AuthorizedApiTest;
 import com.testing.api.dto.LoginRequestDto;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.hamcrest.Matchers;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.blankOrNullString;
 
 public class AuthClient {
     private String sessionId;
@@ -33,7 +35,7 @@ public class AuthClient {
 
     public String createSession(String login){
         LoginRequestDto loginRequestDto = new LoginRequestDto(
-                Config.getProperties("positive.login"),
+                login,
                 Config.getProperties("positive.password"),
                 Config.getProperties("auth.provider"),
                 Config.getProperties("auth.application")
@@ -42,16 +44,19 @@ public class AuthClient {
         String sessionId = given()
                 .contentType(ContentType.JSON)
                 .body(loginRequestDto)
-                .when()
+                .log().body()
+            .when()
                 .post(Config.getProperties("stand.url") + "/json/auth/login")
-                .then()
+            .then()
+                .statusCode(200)
+                .log().body()
+                .cookie("JSESSIONID", Matchers.not(blankOrNullString()))
                 .extract().cookie("JSESSIONID");
-
         return sessionId;
     }
 
     public void endSession(String sessionId){
-        if (!sessionId.isEmpty()){
+        if (!(sessionId == null) && !sessionId.isBlank()){
             given()
                     .contentType(ContentType.JSON)
                     .cookie("JSESSIONID", sessionId)
