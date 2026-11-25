@@ -1,6 +1,7 @@
 package com.testing.api.test.auth;
 
 import com.testing.api.UnauthorizedApiTest;
+import com.testing.api.client.AuthClient;
 import com.testing.api.config.Config;
 import com.testing.api.dto.LoginRequestDto;
 import io.restassured.http.ContentType;
@@ -11,6 +12,9 @@ import static org.hamcrest.Matchers.*;
 
 public class LoginTest extends UnauthorizedApiTest {
     private final String requestUri = "/json/auth/login";
+    private String sessionId;
+
+    AuthClient authClient = new AuthClient();
 
     @Test
     void shouldReturn200WhenCredentialsAreValid(){
@@ -29,8 +33,10 @@ public class LoginTest extends UnauthorizedApiTest {
             .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", sessionId)
                 .body("state", equalTo("add_authorized"))
                 .extract();
+        authClient.endSession(sessionId);
     }
 
     @Test
